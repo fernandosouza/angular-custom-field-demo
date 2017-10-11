@@ -1,26 +1,35 @@
-import { Component, OnInit, Input, forwardRef, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, forwardRef, OnChanges, AfterViewChecked } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, FormControl } from '@angular/forms';
 
-export function createCounterRangeValidator(max = 10, min = 0) {
-  return function validateCounterRange(c: FormControl) {
-    const err = {
-      rangeError: {
-        given: c.value,
-        max: max,
-        min: min
+export function allRequired(arr = []) {
+  if (arr.find(value => value === '') !== undefined) {
+    return {
+      requiredError: {
+        given: arr
       }
     };
-    return (c.value > +max || c.value < +min) ? err : null;
+  }
+  return null;
+}
+
+export function createCounterRangeValidator() {
+  return function validateCounterRange(c: FormControl) {
+    if (c.value === null) {
+      return null;
+    }
+    const err = allRequired(c.value);
+    return (c.value && err) ? err : null;
   };
 }
 
 @Component({
   selector: 'app-counter-input',
   template: `
-    <h6>Counter Value</h6>
-    <button (click)="decrement()">-</button>
-    {{counterValue}}
-    <button (click)="increment()">+</button>
+    <button (click)="addNewitem()">+</button>
+    <div *ngFor="let item of items; let i = index; trackBy: identify">
+      <input type="text" [ngModel]="items[i]" (blur)="propagateTouched()" (keyup)="keyup($event, i)" name="name{{i}}" />
+      <button (click)="remove(i)">-</button>
+    </div>
   `,
   styleUrls: [],
   providers: [
@@ -36,24 +45,21 @@ export function createCounterRangeValidator(max = 10, min = 0) {
     }
   ]
 })
-export class CounterInputComponent implements OnInit, ControlValueAccessor, OnChanges {
-  @Input() _counterValue = 0;
-  @Input() max;
-  @Input() min;
+export class CounterInputComponent implements ControlValueAccessor, OnInit {
+  @Input() items = [];
 
   validateFn: Function;
+  propagateChange = (_: any) => {};
+  propagateTouched = (_: any) => {};
 
   constructor() { }
 
   ngOnInit() {
+    this.validateFn = createCounterRangeValidator();
   }
 
-  propagateChange = (_: any) => {};
-
-  ngOnChanges(changes) {
-    if (changes.min || changes.max) {
-      this.validateFn = createCounterRangeValidator(this.max, this.min);
-    }
+  identify(index, item) {
+    return index;
   }
 
   validate(c: FormControl) {
@@ -61,33 +67,33 @@ export class CounterInputComponent implements OnInit, ControlValueAccessor, OnCh
   }
 
   writeValue(value: any): void {
-    if (value !== undefined) {
-      this.counterValue = value;
+    if (value) {
+      this.items = value;
     }
+  }
+
+  keyup($event, i) {
+    this.items[i] = $event.target.value;
+    this.propagateChange(this.items);
   }
 
   registerOnChange(fn: any): void {
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {}
+  registerOnTouched(fn: any): void {
+    this.propagateTouched = fn;
+  }
 
   setDisabledState?(isDisabled: boolean): void {}
 
-  get counterValue(): number {
-    return this._counterValue;
+  addNewitem() {
+    this.items.push('');
+    this.propagateChange(this.items);
   }
 
-  set counterValue(value: number) {
-    this._counterValue = value;
-    this.propagateChange(this._counterValue);
-  }
-
-  increment() {
-    this.counterValue++;
-  }
-
-  decrement() {
-    this.counterValue--;
+  remove(i) {
+    this.items.splice(i, 1);
+    this.propagateChange(this.items);
   }
 }
