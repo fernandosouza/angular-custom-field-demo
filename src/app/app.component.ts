@@ -11,8 +11,19 @@ import { Component } from '@angular/core';
       <input type="checkbox" [(ngModel)]="disabled" />
       <b>Disable the custom form control</b>
     </label>
+    <br>
+    <label>
+      <input type="checkbox" [(ngModel)]="required" />
+      <b>Make it required</b>
+    </label>
     <form #form="ngForm" novalidade>
-      <app-counter-input name="counter" [disabled]="disabled" #field="ngModel" [ngModel]="['a', 'b']"></app-counter-input>
+      <app-counter-input
+        [required]=required
+        name="counter"
+        [disabled]="disabled"
+        #field="ngModel"
+        [ngModel]="['a', 'b']">
+      </app-counter-input>
     </form>
   `,
   styleUrls: ['./app.component.css']
@@ -20,4 +31,5 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'app';
   disabled = false;
+  required = false;
 }

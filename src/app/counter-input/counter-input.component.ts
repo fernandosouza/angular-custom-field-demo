@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, forwardRef, OnChanges, AfterViewChecked } from '@angular/core';
+import { Component, Input, forwardRef, OnChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, FormControl } from '@angular/forms';
 
 export function allRequired(arr = []) {
@@ -12,12 +12,12 @@ export function allRequired(arr = []) {
   return null;
 }
 
-export function createCounterRangeValidator() {
+export function createCounterRangeValidator(required) {
   return function validateCounterRange(c: FormControl) {
     if (c.value === null) {
       return null;
     }
-    const err = allRequired(c.value);
+    const err = required ? allRequired(c.value) : null;
     return (c.value && err) ? err : null;
   };
 }
@@ -51,18 +51,17 @@ export function createCounterRangeValidator() {
     }
   ]
 })
-export class CounterInputComponent implements ControlValueAccessor, OnInit {
-  @Input() items = [];
+export class CounterInputComponent implements ControlValueAccessor, OnChanges {
+  items = [];
 
+  @Input() required;
   validateFn: Function;
   disabled: boolean;
   propagateChange = (_: any) => {};
   propagateTouched = (_: any) => {};
 
-  constructor() { }
-
-  ngOnInit() {
-    this.validateFn = createCounterRangeValidator();
+  ngOnChanges() {
+    this.validateFn = createCounterRangeValidator(this.required);
   }
 
   identify(index, item) {
