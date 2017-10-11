@@ -27,7 +27,13 @@ export function createCounterRangeValidator() {
   template: `
     <button (click)="addNewitem()">+</button>
     <div *ngFor="let item of items; let i = index; trackBy: identify">
-      <input type="text" [ngModel]="items[i]" (blur)="propagateTouched()" (keyup)="keyup($event, i)" name="name{{i}}" />
+      <input
+        type="text"
+        [ngModel]="items[i]"
+        [disabled]="disabled"
+        (blur)="propagateTouched()"
+        (keyup)="keyup($event, i)"
+        name="name{{i}}" />
       <button (click)="remove(i)">-</button>
     </div>
   `,
@@ -49,6 +55,7 @@ export class CounterInputComponent implements ControlValueAccessor, OnInit {
   @Input() items = [];
 
   validateFn: Function;
+  disabled: boolean;
   propagateChange = (_: any) => {};
   propagateTouched = (_: any) => {};
 
@@ -85,7 +92,9 @@ export class CounterInputComponent implements ControlValueAccessor, OnInit {
     this.propagateTouched = fn;
   }
 
-  setDisabledState?(isDisabled: boolean): void {}
+  setDisabledState?(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
 
   addNewitem() {
     this.items.push('');
