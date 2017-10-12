@@ -1,5 +1,5 @@
 import { Component, Input, forwardRef, OnChanges } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, FormControl } from '@angular/forms';
+import { ControlValueAccessor, Validator, NG_VALUE_ACCESSOR, NG_VALIDATORS, FormControl } from '@angular/forms';
 
 export function allRequired(arr = []) {
   if (arr.find(value => value === '') !== undefined) {
@@ -51,7 +51,7 @@ export function createCounterRangeValidator(required) {
     }
   ]
 })
-export class CounterInputComponent implements ControlValueAccessor, OnChanges {
+export class CounterInputComponent implements ControlValueAccessor, Validator, OnChanges {
   items = [];
 
   @Input() required;
