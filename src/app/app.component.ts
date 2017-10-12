@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
       <input type="checkbox" [(ngModel)]="required" />
       <b>Make it required</b>
     </label>
-    <form #form="ngForm" novalidade>
+    <form #form="ngForm" novalidate>
       <app-counter-input
         [required]=required
         name="counter"
