@@ -23,7 +23,7 @@ export function createCounterRangeValidator(required) {
 }
 
 @Component({
-  selector: 'app-counter-input',
+  selector: 'app-custom-field',
   template: `
     <button (click)="addNewitem()">+</button>
     <div *ngFor="let item of items; let i = index; trackBy: identify">
@@ -41,17 +41,17 @@ export function createCounterRangeValidator(required) {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => CounterInputComponent),
+      useExisting: forwardRef(() => CustomFieldComponent),
       multi: true
     },
     {
       provide: NG_VALIDATORS,
-      useExisting: forwardRef(() => CounterInputComponent),
+      useExisting: forwardRef(() => CustomFieldComponent),
       multi: true
     }
   ]
 })
-export class CounterInputComponent implements ControlValueAccessor, Validator, OnChanges {
+export class CustomFieldComponent implements ControlValueAccessor, Validator, OnChanges {
   items = [];
 
   @Input() required;

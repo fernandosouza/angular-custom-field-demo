@@ -17,13 +17,13 @@ import { Component } from '@angular/core';
       <b>Make it required</b>
     </label>
     <form #form="ngForm" novalidate>
-      <app-counter-input
+      <app-custom-field
         [required]=required
         name="counter"
         [disabled]="disabled"
         #field="ngModel"
         [ngModel]="['a', 'b']">
-      </app-counter-input>
+      </app-custom-field>
     </form>
   `,
   styleUrls: ['./app.component.css']
